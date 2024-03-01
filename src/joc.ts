@@ -161,5 +161,11 @@ class Joc {
             element.setAttribute('src', './img/flag.png');
         }
         casella.marcada = !casella.marcada;
+    
+        // Comprobar la victoria después de marcar/desmarcar la casilla
+        if (this.comprobarVictoria()) {
+            alert('Has guanyat!');
+            location.reload();
+        }
     }
 }

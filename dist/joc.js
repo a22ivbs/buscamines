@@ -60,6 +60,11 @@ var Joc = /** @class */ (function () {
         }
     };
     Joc.prototype.revelarCasella = function (fila, columna) {
+        //comprovar si se a ganado
+        if (this.comprobarVictoria()) {
+            alert('Has guanyat!');
+            location.reload();
+        }
         var casella = this.tauler.caselles[fila][columna];
         if (casella.marcada)
             return;
@@ -71,9 +76,9 @@ var Joc = /** @class */ (function () {
             this.revelarTodo();
             setTimeout(function () {
                 alert('Has perdut!');
-                //recargar la pagina
+                console.log('Has perdut!');
                 location.reload();
-            }, 100);
+            }, 3000);
         }
         else {
             // Comprovar quantes mines hi ha al voltant i actualitzar el src segun la cantidad de mines al voltant de la casella clicada tengo imagenes de 0 a 8 que representan la cantidad de minas alrededor de la casella clicada Minesweeper_0.gif, Minesweeper_1.gif, ..., Minesweeper_8.gif
@@ -84,6 +89,24 @@ var Joc = /** @class */ (function () {
             }
             element.classList.add('revelada');
         }
+    };
+    Joc.prototype.comprobarVictoria = function () {
+        for (var i = 0; i < this.tauler.filas; i++) {
+            for (var j = 0; j < this.tauler.columnes; j++) {
+                var casella = this.tauler.caselles[i][j];
+                if (casella.esMina) {
+                    if (!casella.marcada) {
+                        return false; // Si hay una mina sin marcar, no se ha ganado
+                    }
+                }
+                else {
+                    if (casella.marcada) {
+                        return false; // Si hay una casilla marcada sin mina, no se ha ganado
+                    }
+                }
+            }
+        }
+        return true; // Todas las minas están marcadas correctamente, se ha ganado
     };
     Joc.prototype.getMinesAlVoltant = function (fila, columna) {
         var minesAlVoltant = 0;
@@ -102,20 +125,34 @@ var Joc = /** @class */ (function () {
         for (var i = fila - 1; i <= fila + 1; i++) {
             for (var j = columna - 1; j <= columna + 1; j++) {
                 if (i >= 0 && i < this.tauler.filas && j >= 0 && j < this.tauler.columnes) {
-                    this.tauler.caselles[i][j].revelada = true;
+                    var casella = this.tauler.caselles[i][j];
+                    if (!casella.revelada && !casella.marcada) {
+                        casella.revelada = true;
+                        var element = document.querySelector(".casella[data-fila=\"".concat(i, "\"][data-columna=\"").concat(j, "\"]"));
+                        var minesAlVoltant = this.getMinesAlVoltant(i, j);
+                        element.src = "./img/Minesweeper_".concat(minesAlVoltant, ".gif");
+                        element.classList.add('revelada');
+                        if (minesAlVoltant === 0) {
+                            this.obrirVeines(i, j);
+                        }
+                    }
                 }
             }
         }
     };
     Joc.prototype.marcarCasella = function (fila, columna) {
-        // cambiar el src a bandera.gif si la casella no esta marcada y a square.gif si la casella esta marcada
         var casella = this.tauler.caselles[fila][columna];
         if (casella.revelada)
             return;
         var element = document.querySelector(".casella[data-fila=\"".concat(fila, "\"][data-columna=\"").concat(columna, "\"]"));
         element.classList.toggle('marcada');
+        if (casella.marcada) {
+            element.setAttribute('src', '');
+        }
+        else {
+            element.setAttribute('src', './img/flag.png');
+        }
         casella.marcada = !casella.marcada;
-        element.setAttribute('src', 'flag.png');
     };
     return Joc;
 }());

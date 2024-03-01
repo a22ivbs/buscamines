@@ -24,47 +24,106 @@ class Joc {
         let tauler = document.getElementById('tauler');
         tauler.innerHTML = '';
         for (let i = 0; i < this.tauler.filas; i++) {
-            let fila = document.createElement('div');
-            fila.className = 'fila';
+            let filaDiv = document.createElement('div'); // Crear un elemento div para la fila
+            filaDiv.className = 'fila';
             for (let j = 0; j < this.tauler.columnes; j++) {
-                let casella = document.createElement('div');
+                let casella = document.createElement('img'); // Crear un elemento img
                 casella.className = 'casella';
                 casella.dataset.fila = i.toString();
                 casella.dataset.columna = j.toString();
+                casella.src = './img/square.gif'; // Establecer el src a square.gif
                 casella.addEventListener('click', () => this.revelarCasella(i, j));
                 casella.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
                     this.marcarCasella(i, j);
                 });
-                fila.appendChild(casella);
+                filaDiv.appendChild(casella); // Añadir la imagen a la fila
             }
-            tauler.appendChild(fila);
+            tauler.appendChild(filaDiv); // Añadir la fila al tauler
         }
     }
 
+
+    revelarTodo() {
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++) {
+                let casella = this.tauler.caselles[i][j];
+                let element = document.querySelector(`.casella[data-fila="${i}"][data-columna="${j}"]`) as HTMLImageElement;
+                if (casella.esMina) {
+                    element.src = './img/mina.png';
+                } else {
+                    let minesAlVoltant = this.getMinesAlVoltant(i, j);
+                    element.src = `./img/Minesweeper_${minesAlVoltant}.gif`;
+                }
+                element.classList.add('revelada');
+            }
+        }
+    }
+
+
     revelarCasella(fila: number, columna: number) {
+
         let casella = this.tauler.caselles[fila][columna];
         if (casella.marcada) return;
         casella.revelada = true;
+        let element = document.querySelector(`.casella[data-fila="${fila}"][data-columna="${columna}"]`) as HTMLImageElement;
         if (casella.esMina) {
-            let element = document.querySelector(`.casella[data-fila="${fila}"][data-columna="${columna}"]`);
+            
             element.classList.add('mina');
-            alert('Has perdut!');
-            this.dibuixarTauler();
+            element.src = './img/mina.png'; // Cambiar el src a mina.gif
+            this.revelarTodo();
+            
 
+            setTimeout(() => {
+                alert('Has perdut!');
+                //recargar la pagina
+                location.reload();
+            }, 100);
         } else {
-            let element = document.querySelector(`.casella[data-fila="${fila}"][data-columna="${columna}"]`);
+            // Comprovar quantes mines hi ha al voltant i actualitzar el src segun la cantidad de mines al voltant de la casella clicada tengo imagenes de 0 a 8 que representan la cantidad de minas alrededor de la casella clicada Minesweeper_0.gif, Minesweeper_1.gif, ..., Minesweeper_8.gif
+            let minesAlVoltant = this.getMinesAlVoltant(fila, columna);
+            element.src = `./img/Minesweeper_${minesAlVoltant}.gif`;
+            if (minesAlVoltant === 0) {
+                this.obrirVeines(fila, columna);
+            }
+
             element.classList.add('revelada');
         }
+    }
 
+    getMinesAlVoltant(fila: number, columna: number) {
+        let minesAlVoltant = 0;
+        for (let i = fila - 1; i <= fila + 1; i++) {
+            for (let j = columna - 1; j <= columna + 1; j++) {
+                if (i >= 0 && i < this.tauler.filas && j >= 0 && j < this.tauler.columnes) {
+                    if (this.tauler.caselles[i][j].esMina) {
+                        minesAlVoltant++;
+                    }
+                }
+            }
+        }
+        return minesAlVoltant;
+    }
+
+    obrirVeines(fila: number, columna: number) {
+        for (let i = fila - 1; i <= fila + 1; i++) {
+            for (let j = columna - 1; j <= columna + 1; j++) {
+                if (i >= 0 && i < this.tauler.filas && j >= 0 && j < this.tauler.columnes) {
+                    this.tauler.caselles[i][j].revelada = true;
+                }
+            }
+        }
     }
 
     marcarCasella(fila: number, columna: number) {
+        // cambiar el src a bandera.gif si la casella no esta marcada y a square.gif si la casella esta marcada
         let casella = this.tauler.caselles[fila][columna];
         if (casella.revelada) return;
         let element = document.querySelector(`.casella[data-fila="${fila}"][data-columna="${columna}"]`);
         element.classList.toggle('marcada');
         casella.marcada = !casella.marcada;
 
+            element.setAttribute('src', 'flag.png');
+        
     }
 }

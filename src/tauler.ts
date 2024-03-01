@@ -29,7 +29,7 @@ class Tauler {
         for (let i = 0; i < this.filas; i++) {
             this.caselles[i] = [];
             for (let j = 0; j < this.columnes; j++) {
-                this.caselles[i][j] = new Casella(Math.random() < 0.3);
+                this.caselles[i][j] = new Casella(Math.random() < 0.2);
             }
         }
     }

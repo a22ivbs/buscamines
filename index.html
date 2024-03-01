@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Buscaminas Ivan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
@@ -12,22 +14,27 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #333; /* Cambiar el color de fondo a gris oscuro */
+            background-color: #333;
+            /* Cambiar el color de fondo a gris oscuro */
             font-family: Arial, sans-serif;
-            color: #fff; /* Cambiar el color del texto a blanco */
+            color: #fff;
+            /* Cambiar el color del texto a blanco */
         }
-        
-
     </style>
+    <h1 style="position: absolute; top:0; font-family: 'Raleway', sans-serif;
+    ">Ivan Barbero - Buscaminas</h1>
 </head>
+
 <body>
+
     <div id="tauler"></div>
 
     <script src="./dist/casella.js"></script>
     <script src="./dist/tauler.js"></script>
     <script src="./dist/joc.js"></script>
     <script>
-        const joc = new Joc(5,5);
+        const joc = new Joc(5, 5);
     </script>
 </body>
+
 </html>
